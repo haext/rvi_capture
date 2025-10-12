@@ -11,8 +11,19 @@ Tested on Arch Linux with iOS 14.8.
 `libimobiledevice` and `python3` must be installed. Ensure that the `usbmuxd` daemon is running.
 
 ### Windows
-`python3` and iTunes must be installed. Ensure that the `AppleMobileDeviceService.exe` process is running.  
+`python3` and iTunes must be installed. Ensure that the `AppleMobileDeviceService.exe` process is running.
 `libimobiledevice` will be downloaded as needed.
+
+You will also need to install pywin32 from `requirements_windows.txt` for named pipe support.
+```powershell
+# Powershell:
+# optional but suggested: set up and activate a venv
+python3 -m venv .venv
+.\.venv\Scripts\activate
+
+# Install requirements
+pip install -r requirements_windows.txt
+```
 
 ## Usage
 
@@ -23,13 +34,21 @@ Tested on Arch Linux with iOS 14.8.
     * pcapng: The default. Newer and allows for distinguishing between interfaces.
       Wireshark 3.0+ supports streaming captures with this format.
     * pcap: Older format for compatibility.
-* `--udid`: device UDID  
+* `--udid`: device UDID
   The specific device to target. If omitted, the first device found will be used.
 * `outfile`: output file or FIFO, or `-` for standard output.
+    * On Windows, you can alternatively use: `--pipe arbitrary_pipe_name`
 
 ## Using with Wireshark
-```
+```sh
 ./rvi_capture.py - | wireshark -k -i -
+```
+On Windows:
+```powershell
+# first Powerhsell window
+python rvi_capture.py --pipe rvi_capture
+# second window:
+& "$env:ProgramFiles\Wireshark\Wireshark.exe" -i"\\.\pipe\rvi_capture" -k
 ```
 
 ### Tips
